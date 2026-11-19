@@ -5,7 +5,6 @@ namespace Database\Factories;
 use App\Enums\FaultCategory;
 use App\Enums\FaultSeverity;
 use App\Enums\FaultStatus;
-use App\Models\Fault;
 use App\Models\Site;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;

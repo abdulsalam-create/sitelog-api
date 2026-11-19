@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Enums\MaintenanceAction;
 use App\Enums\MaintenanceUnit;
-use App\Models\MaintenanceItem;
 use App\Models\VisitReport;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

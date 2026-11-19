@@ -7,7 +7,6 @@ use App\Enums\ReportStatus;
 use App\Enums\VisitType;
 use App\Models\Site;
 use App\Models\User;
-use App\Models\VisitReport;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class VisitReportFactory extends Factory

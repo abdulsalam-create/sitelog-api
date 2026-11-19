@@ -6,7 +6,6 @@ use App\Enums\PowerSource;
 use App\Enums\SiteStatus;
 use App\Enums\SiteType;
 use App\Models\Region;
-use App\Models\Site;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class SiteFactory extends Factory

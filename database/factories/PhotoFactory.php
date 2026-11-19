@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\Photo;
 use App\Models\User;
 use App\Models\VisitReport;
 use Illuminate\Database\Eloquent\Factories\Factory;
