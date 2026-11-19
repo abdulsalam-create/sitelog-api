@@ -1,0 +1,212 @@
+// SiteLog ER diagram
+// Paste this into dbdiagram.io, export a PNG for /docs and share the link with the mentor.
+
+Enum user_role {
+  admin
+  manager
+  engineer
+}
+
+Enum site_type {
+  greenfield
+  rooftop
+  indoor
+}
+
+Enum power_source {
+  grid
+  generator
+  hybrid
+  solar
+}
+
+Enum site_status {
+  active
+  under_maintenance
+  decommissioned
+}
+
+Enum visit_type {
+  routine
+  corrective
+  emergency
+}
+
+Enum battery_health {
+  good
+  fair
+  poor
+}
+
+Enum report_status {
+  draft
+  submitted
+  approved
+  rejected
+}
+
+Enum maintenance_action {
+  refilled
+  replaced
+  repaired
+  inspected
+}
+
+Enum maintenance_unit {
+  litres
+  pieces
+}
+
+Enum fault_category {
+  power
+  transmission
+  equipment
+  security
+  civil
+}
+
+Enum fault_severity {
+  low
+  medium
+  high
+  critical
+}
+
+Enum fault_status {
+  open
+  in_progress
+  resolved
+  closed
+}
+
+Table users {
+  id bigint [pk, increment]
+  name varchar
+  email varchar [unique]
+  password varchar
+  role user_role
+  phone varchar
+  staff_id varchar [unique]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table regions {
+  id bigint [pk, increment]
+  name varchar
+  code varchar [unique]
+  manager_id bigint [ref: > users.id]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table sites {
+  id bigint [pk, increment]
+  site_code varchar [unique]
+  name varchar
+  region_id bigint [ref: > regions.id, not null]
+  address varchar
+  latitude decimal(10, 7)
+  longitude decimal(10, 7)
+  site_type site_type
+  power_source power_source
+  status site_status
+  created_at timestamp
+  updated_at timestamp
+
+  indexes {
+    region_id
+    status
+    power_source
+    site_type
+  }
+}
+
+Table site_user {
+  site_id bigint [ref: > sites.id]
+  user_id bigint [ref: > users.id]
+  assigned_at timestamp
+
+  indexes {
+    (site_id, user_id) [pk]
+  }
+}
+
+Table visit_reports {
+  id bigint [pk, increment]
+  site_id bigint [ref: > sites.id, not null]
+  engineer_id bigint [ref: > users.id, not null]
+  visit_date date [not null]
+  visit_type visit_type
+  grid_power_available boolean
+  generator_hours decimal(8, 2)
+  fuel_level_percent tinyint
+  battery_health battery_health
+  work_summary text
+  status report_status
+  reviewed_by bigint [ref: > users.id]
+  reviewed_at timestamp
+  review_comment text
+  created_at timestamp
+  updated_at timestamp
+
+  indexes {
+    (site_id, engineer_id, visit_date) [unique]
+    status
+    visit_type
+    visit_date
+    engineer_id
+  }
+}
+
+Table maintenance_items {
+  id bigint [pk, increment]
+  visit_report_id bigint [ref: > visit_reports.id, not null]
+  item_name varchar
+  action maintenance_action
+  quantity decimal(8, 2)
+  unit maintenance_unit
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table faults {
+  id bigint [pk, increment]
+  site_id bigint [ref: > sites.id, not null]
+  raised_by bigint [ref: > users.id, not null]
+  assigned_to bigint [ref: > users.id]
+  title varchar
+  description text
+  category fault_category
+  severity fault_severity
+  status fault_status
+  sla_due_at timestamp
+  resolved_at timestamp
+  created_at timestamp
+  updated_at timestamp
+
+  indexes {
+    status
+    severity
+    category
+    site_id
+    assigned_to
+    sla_due_at
+  }
+}
+
+// Polymorphic. photoable_type is VisitReport or Fault, photoable_id points at the row.
+Table photos {
+  id bigint [pk, increment]
+  photoable_type varchar
+  photoable_id bigint
+  path varchar
+  caption varchar
+  uploaded_by bigint [ref: > users.id, not null]
+  created_at timestamp
+  updated_at timestamp
+
+  indexes {
+    (photoable_type, photoable_id)
+  }
+}
