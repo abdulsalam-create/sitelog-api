@@ -74,3 +74,9 @@ it('revokes the token on logout', function () {
 
     expect($user->tokens()->count())->toBe(0);
 });
+
+it('returns a json 405 when the verb does not match', function () {
+    $this->get('/api/v1/auth/login')
+        ->assertStatus(405)
+        ->assertJsonStructure(['message']);
+});
