@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\RegionController;
 use App\Http\Controllers\Api\V1\SiteController;
+use App\Http\Controllers\Api\V1\VisitReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -22,5 +23,16 @@ Route::prefix('v1')->group(function () {
         Route::delete('sites/{site}', [SiteController::class, 'destroy']);
         Route::post('sites/{site}/engineers/{user}', [SiteController::class, 'assignEngineer']);
         Route::delete('sites/{site}/engineers/{user}', [SiteController::class, 'removeEngineer']);
+
+        Route::get('sites/{site}/reports', [VisitReportController::class, 'indexForSite']);
+        Route::post('sites/{site}/reports', [VisitReportController::class, 'store']);
+
+        Route::get('reports', [VisitReportController::class, 'index']);
+        Route::get('reports/{report}', [VisitReportController::class, 'show']);
+        Route::put('reports/{report}', [VisitReportController::class, 'update']);
+        Route::delete('reports/{report}', [VisitReportController::class, 'destroy']);
+        Route::post('reports/{report}/submit', [VisitReportController::class, 'submit']);
+        Route::post('reports/{report}/approve', [VisitReportController::class, 'approve']);
+        Route::post('reports/{report}/reject', [VisitReportController::class, 'reject']);
     });
 });

@@ -13,7 +13,7 @@ class RegionResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'code' => $this->code,
-            'manager' => new UserResource($this->whenLoaded('manager')),
+            'manager' => $this->whenLoaded('manager', fn () => $this->manager ? new UserResource($this->manager) : null),
             'sites_count' => $this->whenCounted('sites'),
             'created_at' => $this->created_at,
         ];
