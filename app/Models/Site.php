@@ -27,6 +27,10 @@ class Site extends Model
         'status',
     ];
 
+    protected $attributes = [
+        'status' => 'active',
+    ];
+
     protected function casts(): array
     {
         return [
