@@ -57,6 +57,19 @@ class SitePolicy
             && $site->engineers()->whereKey($user->id)->exists();
     }
 
+    public function raiseFault(User $user, Site $site): bool
+    {
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        if ($user->role === UserRole::Manager) {
+            return $site->region?->manager_id === $user->id;
+        }
+
+        return $site->engineers()->whereKey($user->id)->exists();
+    }
+
     private function managesSite(User $user, Site $site): bool
     {
         if ($user->isAdmin()) {

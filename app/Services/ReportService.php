@@ -3,6 +3,9 @@
 namespace App\Services;
 
 use App\Enums\ReportStatus;
+use App\Events\LowFuelRecorded;
+use App\Events\ReportReviewed;
+use App\Events\ReportSubmitted;
 use App\Models\Site;
 use App\Models\User;
 use App\Models\VisitReport;
@@ -21,6 +24,10 @@ class ReportService
             ]);
 
             $report->maintenanceItems()->createMany($data['maintenance_items'] ?? []);
+
+            if ($report->fuel_level_percent < 20) {
+                LowFuelRecorded::dispatch($report);
+            }
 
             return $report->refresh();
         });
@@ -52,6 +59,8 @@ class ReportService
     {
         $report->update(['status' => ReportStatus::Submitted]);
 
+        ReportSubmitted::dispatch($report);
+
         return $report;
     }
 
@@ -64,6 +73,8 @@ class ReportService
             'review_comment' => $comment,
         ]);
 
+        ReportReviewed::dispatch($report);
+
         return $report;
     }
 
@@ -75,6 +86,8 @@ class ReportService
             'reviewed_at' => now(),
             'review_comment' => $comment,
         ]);
+
+        ReportReviewed::dispatch($report);
 
         return $report;
     }

@@ -21,4 +21,13 @@ class RegionPolicy
     {
         return $user->isAdmin();
     }
+
+    public function summary(User $user, Region $region): bool
+    {
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        return $region->manager_id === $user->id;
+    }
 }

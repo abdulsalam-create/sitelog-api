@@ -11,6 +11,7 @@ use App\Http\Requests\UpdateSiteRequest;
 use App\Http\Resources\SiteResource;
 use App\Models\Site;
 use App\Models\User;
+use App\Services\SummaryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Validation\ValidationException;
@@ -105,5 +106,12 @@ class SiteController extends Controller
         $site->engineers()->detach($user->id);
 
         return new SiteResource($site->load(['region.manager', 'engineers']));
+    }
+
+    public function summary(Site $site, SummaryService $summaries): JsonResponse
+    {
+        $this->authorize('view', $site);
+
+        return response()->json(['data' => $summaries->site($site)]);
     }
 }

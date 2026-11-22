@@ -25,6 +25,7 @@ class Fault extends Model
         'status',
         'sla_due_at',
         'resolved_at',
+        'sla_notified_at',
     ];
 
     protected function casts(): array
@@ -35,6 +36,7 @@ class Fault extends Model
             'status' => FaultStatus::class,
             'sla_due_at' => 'datetime',
             'resolved_at' => 'datetime',
+            'sla_notified_at' => 'datetime',
         ];
     }
 
