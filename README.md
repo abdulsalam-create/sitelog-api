@@ -85,7 +85,7 @@ All seeded passwords are `password`.
 
 Lists are paginated (`data`, `links`, `meta`) and filterable. Sites filter by region, status, power source and site type, with search over code and name. Reports filter by site, region, engineer, visit type, status and date range. Faults filter by severity, category, status, region and assignee, plus `sla_breached=1`.
 
-A full walkthrough of the API lives in the writeup folder (`postman-testing.md`) and a ready-to-import Postman collection is in `docs/`.
+A full API reference covering every endpoint, permission, request field and response shape is in `docs/api.md`. A walkthrough of the API lives in the writeup folder (`postman-testing.md`) and a ready-to-import Postman collection is in `docs/`.
 
 ## Design decisions
 
