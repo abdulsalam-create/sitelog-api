@@ -21,9 +21,12 @@ META = {
     "repo": "https://github.com/abdulsalam-create/sitelog-api",
 }
 
-NAVY = "1F3864"
-BLUE = "2E74B5"
-BORDER = "BFBFBF"
+MUSTARD = "5C4600"
+YELLOW = "FFCB05"
+YELLOW_LIGHT = "FFF8D6"
+INK = "1A1A1A"
+INK_SOFT = "404040"
+BORDER = "BFC9D9"
 CODE_BG = "F2F2F2"
 
 NS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"'
@@ -110,10 +113,13 @@ class Builder:
             for cidx, cell in enumerate(row + [""] * (cols - len(row))):
                 tcpr = f'<w:tcPr><w:tcW w:w="{widths[cidx]}" w:type="dxa"/>'
                 if ridx == 0:
-                    tcpr += f'<w:shd w:val="clear" w:color="auto" w:fill="{NAVY}"/>'
+                    tcpr += f'<w:shd w:val="clear" w:color="auto" w:fill="{YELLOW_LIGHT}"/>'
                 tcpr += "</w:tcPr>"
                 if ridx == 0:
-                    content = inline_runs(cell).replace("<w:r>", '<w:r><w:rPr><w:b/><w:color w:val="FFFFFF"/></w:rPr>', 1).replace('<w:r><w:rPr><w:rFonts', '<w:r><w:rPr><w:b/><w:color w:val="FFFFFF"/><w:rFonts')
+                    content = (
+                        '<w:r><w:rPr><w:b/></w:rPr>'
+                        f'<w:t xml:space="preserve">{esc(cell.replace("`", ""))}</w:t></w:r>'
+                    )
                 else:
                     content = inline_runs(cell)
                 cells.append(
@@ -124,6 +130,27 @@ class Builder:
         tbl.append("</w:tbl>")
         self.body.append("".join(tbl))
         self.para(style="Spacer")
+
+    def title_band(self):
+        tbl = [
+            "<w:tbl>",
+            '<w:tblPr><w:tblW w:w="0" w:type="auto"/><w:jc w:val="center"/></w:tblPr>',
+            '<w:tblGrid><w:gridCol w:w="9638"/></w:tblGrid>',
+        ]
+        for text, style, spacing in [
+            ("SiteLog API", "Title", "240"),
+            ("Network Site Maintenance Reporting and Fault Tracking", "Subtitle", "120"),
+            ("API Reference and Developer Handbook", "Subtitle", "360"),
+        ]:
+            tbl.append(
+                f'<w:tr><w:tc><w:tcPr>'
+                f'<w:shd w:val="clear" w:color="auto" w:fill="{YELLOW}"/>'
+                f"</w:tcPr><w:p><w:pPr><w:pStyle w:val=\"{style}\"/>"
+                f'<w:jc w:val="center"/><w:spacing w:before="{spacing}" w:after="120"/></w:pPr>'
+                f"{inline_runs(text)}</w:p></w:tc></w:tr>"
+            )
+        tbl.append("</w:tbl>")
+        self.body.append("".join(tbl))
 
     def toc_field(self):
         runs = (
@@ -141,9 +168,7 @@ def build():
     b = Builder()
 
     # Title page
-    b.para("SiteLog API", style="Title")
-    b.para("Network Site Maintenance Reporting and Fault Tracking", style="Subtitle")
-    b.para("API Reference and Developer Handbook", style="Subtitle")
+    b.title_band()
     b.para(style="Spacer")
     b.para(style="Spacer")
     b.table([[k, v] for k, v in [
@@ -216,6 +241,7 @@ def build():
         f'<w:document {NS}>'
         f'<w:body>{"".join(b.body)}'
         '<w:sectPr>'
+        '<w:headerReference w:type="default" r:id="rIdHeader"/>'
         '<w:footerReference w:type="default" r:id="rIdFooter"/>'
         '<w:pgSz w:w="11906" w:h="16838"/>'
         '<w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="720" w:footer="720" w:gutter="0"/>'
@@ -229,6 +255,7 @@ def build():
         '<w:docDefaults>'
         '<w:rPrDefault><w:rPr>'
         '<w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:eastAsia="Calibri" w:cs="Calibri"/>'
+        f'<w:color w:val="{INK}"/>'
         '<w:sz w:val="22"/><w:szCs w:val="22"/>'
         "</w:rPr></w:rPrDefault>"
         '<w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="276" w:lineRule="auto"/></w:pPr></w:pPrDefault>'
@@ -238,23 +265,23 @@ def build():
         '<w:next w:val="Normal"/><w:qFormat/>'
         '<w:pPr><w:spacing w:before="240" w:after="240"/><w:jc w:val="center"/></w:pPr>'
         '<w:rPr><w:rFonts w:ascii="Calibri Light" w:hAnsi="Calibri Light"/>'
-        f'<w:b/><w:color w:val="{NAVY}"/><w:sz w:val="56"/><w:szCs w:val="56"/></w:rPr></w:style>'
+        f'<w:b/><w:color w:val="{INK}"/><w:sz w:val="48"/><w:szCs w:val="48"/></w:rPr></w:style>'
         '<w:style w:type="paragraph" w:styleId="Subtitle"><w:name w:val="Subtitle"/><w:basedOn w:val="Normal"/>'
         '<w:next w:val="Normal"/><w:qFormat/>'
         '<w:pPr><w:spacing w:after="120"/><w:jc w:val="center"/></w:pPr>'
-        f'<w:rPr><w:color w:val="{BLUE}"/><w:sz w:val="28"/><w:szCs w:val="28"/></w:rPr></w:style>'
+        f'<w:rPr><w:color w:val="{INK_SOFT}"/><w:sz w:val="26"/><w:szCs w:val="26"/></w:rPr></w:style>'
         '<w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/>'
         '<w:next w:val="Normal"/><w:qFormat/>'
         '<w:pPr><w:keepNext/><w:spacing w:before="360" w:after="200"/><w:outlineLvl w:val="0"/></w:pPr>'
-        f'<w:rPr><w:b/><w:color w:val="{NAVY}"/><w:sz w:val="32"/><w:szCs w:val="32"/></w:rPr></w:style>'
+        f'<w:rPr><w:b/><w:color w:val="{MUSTARD}"/><w:sz w:val="36"/><w:szCs w:val="36"/></w:rPr></w:style>'
         '<w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:basedOn w:val="Normal"/>'
         '<w:next w:val="Normal"/><w:qFormat/>'
         '<w:pPr><w:keepNext/><w:spacing w:before="280" w:after="140"/><w:outlineLvl w:val="1"/></w:pPr>'
-        f'<w:rPr><w:b/><w:color w:val="{BLUE}"/><w:sz w:val="26"/><w:szCs w:val="26"/></w:rPr></w:style>'
+        f'<w:rPr><w:b/><w:color w:val="{INK_SOFT}"/><w:sz w:val="28"/><w:szCs w:val="28"/></w:rPr></w:style>'
         '<w:style w:type="paragraph" w:styleId="Heading3"><w:name w:val="heading 3"/><w:basedOn w:val="Normal"/>'
         '<w:next w:val="Normal"/><w:qFormat/>'
         '<w:pPr><w:keepNext/><w:spacing w:before="240" w:after="120"/><w:outlineLvl w:val="2"/></w:pPr>'
-        f'<w:rPr><w:b/><w:color w:val="{BLUE}"/><w:sz w:val="23"/><w:szCs w:val="23"/></w:rPr></w:style>'
+        f'<w:rPr><w:b/><w:i/><w:color w:val="{INK_SOFT}"/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr></w:style>'
         '<w:style w:type="paragraph" w:styleId="TocHeading"><w:name w:val="TocHeading"/><w:basedOn w:val="Heading1"/>'
         '<w:next w:val="Normal"/><w:qFormat/></w:style>'
         '<w:style w:type="paragraph" w:styleId="CodeBlock"><w:name w:val="CodeBlock"/><w:basedOn w:val="Normal"/>'
@@ -292,18 +319,38 @@ def build():
         + "</w:numbering>"
     )
 
+    header = (
+        f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
+        f'<w:hdr {NS}>'
+        '<w:p><w:pPr>'
+        '<w:tabs><w:tab w:val="right" w:pos="9638"/></w:tabs>'
+        f'<w:pBdr><w:bottom w:val="single" w:sz="6" w:space="4" w:color="{BORDER}"/></w:pBdr>'
+        '<w:spacing w:after="120"/>'
+        "</w:pPr>"
+        '<w:r><w:rPr><w:b/><w:color w:val="5C4600"/><w:sz w:val="20"/></w:rPr>'
+        '<w:t xml:space="preserve">SiteLog API</w:t></w:r>'
+        '<w:r><w:tab/></w:r>'
+        '<w:r><w:rPr><w:color w:val="808080"/><w:sz w:val="18"/></w:rPr>'
+        '<w:t xml:space="preserve">Network Site Maintenance Reporting and Fault Tracking</w:t></w:r>'
+        "</w:p></w:hdr>"
+    )
+
     footer = (
         f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
         f'<w:ftr {NS}>'
-        '<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:after="0"/></w:pPr>'
-        '<w:r><w:t xml:space="preserve">Page </w:t></w:r>'
-        '<w:r><w:fldChar w:fldCharType="begin"/></w:r>'
-        '<w:r><w:instrText xml:space="preserve"> PAGE </w:instrText></w:r>'
-        '<w:r><w:fldChar w:fldCharType="end"/></w:r>'
-        '<w:r><w:t xml:space="preserve"> of </w:t></w:r>'
-        '<w:r><w:fldChar w:fldCharType="begin"/></w:r>'
-        '<w:r><w:instrText xml:space="preserve"> NUMPAGES </w:instrText></w:r>'
-        '<w:r><w:fldChar w:fldCharType="end"/></w:r>'
+        '<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:after="0"/>'
+        f'<w:pBdr><w:top w:val="single" w:sz="6" w:space="4" w:color="{BORDER}"/></w:pBdr>'
+        "</w:pPr>"
+        '<w:r><w:rPr><w:color w:val="808080"/><w:sz w:val="18"/></w:rPr>'
+        '<w:t xml:space="preserve">SiteLog API · API Reference · Page </w:t></w:r>'
+        '<w:r><w:rPr><w:color w:val="808080"/><w:sz w:val="18"/></w:rPr><w:fldChar w:fldCharType="begin"/></w:r>'
+        '<w:r><w:rPr><w:color w:val="808080"/><w:sz w:val="18"/></w:rPr><w:instrText xml:space="preserve"> PAGE </w:instrText></w:r>'
+        '<w:r><w:rPr><w:color w:val="808080"/><w:sz w:val="18"/></w:rPr><w:fldChar w:fldCharType="end"/></w:r>'
+        '<w:r><w:rPr><w:color w:val="808080"/><w:sz w:val="18"/></w:rPr>'
+        '<w:t xml:space="preserve"> of </w:t></w:r>'
+        '<w:r><w:rPr><w:color w:val="808080"/><w:sz w:val="18"/></w:rPr><w:fldChar w:fldCharType="begin"/></w:r>'
+        '<w:r><w:rPr><w:color w:val="808080"/><w:sz w:val="18"/></w:rPr><w:instrText xml:space="preserve"> NUMPAGES </w:instrText></w:r>'
+        '<w:r><w:rPr><w:color w:val="808080"/><w:sz w:val="18"/></w:rPr><w:fldChar w:fldCharType="end"/></w:r>'
         "</w:p></w:ftr>"
     )
 
@@ -324,6 +371,7 @@ def build():
         '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>'
         '<Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/>'
         '<Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/>'
+        '<Override PartName="/word/header1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml"/>'
         '<Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/>'
         "</Types>"
     )
@@ -338,6 +386,7 @@ def build():
     doc_rels = (
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        '<Relationship Id="rIdHeader" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/header" Target="header1.xml"/>'
         '<Relationship Id="rIdFooter" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/>'
         "</Relationships>"
     )
@@ -349,6 +398,7 @@ def build():
         z.writestr("word/styles.xml", styles)
         z.writestr("word/numbering.xml", numbering)
         z.writestr("word/settings.xml", settings)
+        z.writestr("word/header1.xml", header)
         z.writestr("word/footer1.xml", footer)
         z.writestr("word/_rels/document.xml.rels", doc_rels)
 
